@@ -1,9 +1,19 @@
-from random import random
 import numpy as np
 
 class NelderMead:
+    """
+    Nelder-Mead Derivative Free optimization method implementation
+    """
 
     def __init__(self, function, dimensions, alpha=1.0, gama=2.0, rho=0.5, sigma=0.5):
+        """
+        :param function: Function to find the minimum
+        :param dimensions: Input dimensions of "function"
+        :param alpha: Reflection coefficient
+        :param gama: Expansion coefficient
+        :param rho: Contraction coefficient
+        :param sigma: Shrink Coefficient
+        """
         self.history = []
         self.vertices = np.random.rand(dimensions + 1, dimensions)*5
         self.function = function
@@ -16,6 +26,9 @@ class NelderMead:
         self.contracted = None
 
     def get_centroid(self):
+        """
+        :return: The centroid of the n-1 first vertices
+        """
         arr = self.vertices[:-1]
         length = arr.shape[0]
         sum_x = np.sum(arr[:, 0])
@@ -24,46 +37,80 @@ class NelderMead:
         return centroid
 
     def order_vertices(self):
+        """
+        Orders self.vertices from the better function value to the worst
+        """
         y = [self.function(*x) for x in self.vertices]
         order = np.argsort(y)
         vertices = np.array([self.vertices[order[i]] for i in range(len(self.vertices))])
         self.vertices = vertices
 
     def get_reflected_point(self):
+        """
+        :return: last vertex reflected on the centroid position
+        """
         self.reflected = self.vertices[-1] + self.alpha*2*(self.get_centroid() - self.vertices[-1])
         return self.reflected
 
     def reflect(self):
+        """
+        Replaces the last vertex with the reflected vertex.
+        """
         self.vertices[-1, :] = self.reflected
 
     def reflected_is_best(self):
+        """
+        :return: BOOL, returns if the reflected vertex is better than all the current ones.
+        """
         return self.function(*self.reflected) < self.function(*self.vertices[0])
 
     def get_expanded_point(self):
+        """
+        :return: Returns the previously reflected vertex expanded around the centroid.
+        """
         centroid = self.get_centroid()
         self.expanded = centroid + self.gama*(self.reflected - centroid)
         return self.expanded
 
     def expand(self):
+        """
+        Replaces the last vertex with the expanded vertex
+        """
         self.vertices[-1, :] = self.expanded
 
     def get_contracted_point(self):
+        """
+        :return: The last vertex contracted around the centroid.
+        """
         centroid = self.get_centroid()
         self.contracted = centroid + self.rho*(self.vertices[-1] - centroid)
         return self.contracted
 
     def contract(self):
+        """
+        Replaces the last vertex with the contracted vertex
+        """
         self.vertices[-1, :] = self.contracted
 
     def shrink(self):
+        """
+        Shrinks all vertices around the one with the best value
+        """
         for i in range(1, len(self.vertices)):
             self.vertices[i] = self.vertices[0] + self.sigma*(self.vertices[i]-self.vertices[0])
 
     def converged(self):
+        """
+        check for convergence
+        """
         converged = np.sqrt(np.sum((self.vertices[0]-self.vertices[1])**2)) < 0.0001
         return converged
 
     def solve(self):
+        """
+        High-level steps of the Nelder-Mead method
+        :return: History of vertex positions.
+        """
         f = self.function
         while not self.converged():
             self.history.append(self.vertices)

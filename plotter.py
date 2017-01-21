@@ -47,7 +47,7 @@ class PlotFunctionAndTriangle:
 
         ani = animation.FuncAnimation(self.fig, self.animate, len(self.dataPoints),
                                       interval=300, blit=True)
-        ani.save('animation.gif', writer='imagemagick', fps=30)
+        ani.save('animation.gif', writer='imagemagick', fps=3)
         plt.show()
 
     def animate(self, i):

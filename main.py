@@ -1,9 +1,15 @@
-from nelderMead import NelderMead
+from neldermead import NelderMead
 from plotter import PlotFunctionAndTriangle
 
 
 def function(x, y):
-    return (x-2) **2 + (y-2) ** 2
+    """
+    Parabola centered at (2, 2)
+    :param x: x values
+    :param y: y values
+    :return: z values
+    """
+    return (x-2) ** 2 + (y-2) ** 2
 
-dataPointsList = NelderMead(function, 2).solve()
-PlotFunctionAndTriangle(function, dataPointsList)
+POINTS_HISTORY = NelderMead(function, 2).solve()
+PlotFunctionAndTriangle(function, POINTS_HISTORY)
