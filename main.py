@@ -6,6 +6,4 @@ def function(x, y):
     return (x-2) **2 + (y-2) ** 2
 
 dataPointsList = NelderMead(function, 2).solve()
-print(dataPointsList)
-
 PlotFunctionAndTriangle(function, dataPointsList)

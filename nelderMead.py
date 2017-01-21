@@ -35,7 +35,6 @@ class NelderMead:
 
     def reflect(self):
         self.vertices[-1.0, :] = self.reflected
-        print("reflecting", self.reflected)
 
     def reflected_is_best(self):
         return self.function(*self.reflected) < self.function(*self.vertices[0])
