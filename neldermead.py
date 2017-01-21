@@ -1,5 +1,20 @@
 import numpy as np
 
+
+class CachedFunction:
+    def __init__(self, function):
+        self.real_function = function
+        self.cache = {}
+
+    def eval(self, *args):
+        if args in self.cache:
+            return self.cache[args]
+        else:
+            z = self.real_function(*args)
+            self.cache[args] = z
+            return z
+
+
 class NelderMead:
     """
     Nelder-Mead Derivative Free optimization method implementation
@@ -16,7 +31,7 @@ class NelderMead:
         """
         self.history = []
         self.vertices = np.random.rand(dimensions + 1, dimensions)*5
-        self.function = function
+        self.function = CachedFunction(function).eval
         self.alpha = alpha
         self.gama = gama
         self.rho = rho
