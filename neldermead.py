@@ -118,7 +118,7 @@ class NelderMead:
         """
         check for convergence
         """
-        converged = np.sqrt(np.sum((self.vertices[0]-self.vertices[1])**2)) < 0.0001
+        converged = np.sqrt(np.sum((self.vertices[0]-self.vertices[1])**2)) < 0.01
         return converged
 
     def solve(self):
