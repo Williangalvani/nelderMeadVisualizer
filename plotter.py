@@ -36,7 +36,7 @@ class PlotFunctionAndTriangle:
                           y[:-1, :-1] + dy / 2., z, levels=levels,
                           cmap=cmap)
         self.fig.colorbar(cf, ax=ax1)
-        ax1.set_title('contourf with levels')
+        ax1.set_title('Nelder-Mead on a parabolic function')
 
         initial = [[0, 1, 2], [0, 1, 2]]
         self.line, = ax1.plot(*initial)
