@@ -5,14 +5,17 @@ class CachedFunction:
     def __init__(self, function):
         self.real_function = function
         self.cache = {}
+        self.history = []
 
     def eval(self, *args):
         if args in self.cache:
             return self.cache[args]
         else:
             z = self.real_function(*args)
+            self.history.append(z)
             self.cache[args] = z
             return z
+
 
 
 class NelderMead:
@@ -30,8 +33,9 @@ class NelderMead:
         :param sigma: Shrink Coefficient
         """
         self.history = []
-        self.vertices = np.random.rand(dimensions + 1, dimensions)*5
-        self.function = CachedFunction(function).eval
+        self.vertices = np.random.rand(dimensions + 1, dimensions)*2 + 3
+        self.cache = CachedFunction(function)
+        self.function = self.cache.eval
         self.alpha = alpha
         self.gama = gama
         self.rho = rho
@@ -157,4 +161,4 @@ class NelderMead:
             #step 6: shrink
             self.shrink()
 
-        return self.history
+        return self.history, self.cache.history

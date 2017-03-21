@@ -1,5 +1,5 @@
 from neldermead import NelderMead
-from plotter import PlotFunctionAndTriangle
+from plotter import PlotFunctionAndTriangle, plotF
 
 
 def function(x, y):
@@ -11,5 +11,6 @@ def function(x, y):
     """
     return (x-2) ** 2 + (y-2) ** 2
 
-POINTS_HISTORY = NelderMead(function, 2).solve()
-PlotFunctionAndTriangle(function, POINTS_HISTORY)
+vertices, evals = NelderMead(function, 2).solve()
+PlotFunctionAndTriangle(function, vertices)
+plotF(evals)
