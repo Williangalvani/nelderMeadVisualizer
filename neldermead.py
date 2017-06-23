@@ -1,17 +1,27 @@
 import numpy as np
-
+from datetime import datetime
+import numpy as np
+import math
 
 class CachedFunction:
-    def __init__(self, function):
+    def __init__(self, function, limits):
         self.real_function = function
+        self.limits = limits
         self.cache = {}
         self.history = []
 
     def eval(self, *args):
+        limits = self.limits
         if args in self.cache:
             return self.cache[args]
         else:
-            z = self.real_function(*args)
+            penality = 0
+            if limits is not None:
+                for dim, value in enumerate(args):
+                    if limits[dim][0] > value or limits[dim][1]< value:
+                        penality = math.inf
+            
+            z = self.real_function(*args) + penality
             self.history.append(z)
             self.cache[args] = z
             return z
@@ -23,7 +33,7 @@ class NelderMead:
     Nelder-Mead Derivative Free optimization method implementation
     """
 
-    def __init__(self, function, dimensions, alpha=1.0, gama=2.0, rho=0.5, sigma=0.5):
+    def __init__(self, function, dimensions, starting=None, alpha=1.0, limits=None, gama=2.0, rho=0.5, sigma=0.5):
         """
         :param function: Function to find the minimum
         :param dimensions: Input dimensions of "function"
@@ -33,8 +43,14 @@ class NelderMead:
         :param sigma: Shrink Coefficient
         """
         self.history = []
-        self.vertices = np.random.rand(dimensions + 1, dimensions)*2 + 3
-        self.cache = CachedFunction(function)
+        if starting is not None:
+            self.vertices = starting# + np.random.rand(dimensions + 1, dimensions)*10
+        else:
+            self.vertices = np.random.rand(dimensions + 1, dimensions)*10    
+        
+        
+        self.limits = limits 
+        self.cache = CachedFunction(function, limits)
         self.function = self.cache.eval
         self.alpha = alpha
         self.gama = gama
@@ -122,14 +138,24 @@ class NelderMead:
         """
         check for convergence
         """
-        converged = np.sqrt(np.sum((self.vertices[0]-self.vertices[1])**2)) < 0.01
-        return converged
+        if self.function(*self.vertices[0]) < 0.001:
+            return True
+        
+        avg = np.average(self.vertices,axis=0)
+        max_n=np.amax(np.abs(self.vertices-avg),axis=0)
+        if max(max_n) < 0.001/2.0:
+            return True
+        return False
+        
+        
+   
 
     def solve(self):
         """
         High-level steps of the Nelder-Mead method
         :return: History of vertex positions.
         """
+        start = datetime.now()
         f = self.function
         while not self.converged():
             self.history.append(self.vertices)
@@ -160,5 +186,5 @@ class NelderMead:
 
             #step 6: shrink
             self.shrink()
-
+        print("optimization took {0}".format(datetime.now()-start))
         return self.history, self.cache.history
